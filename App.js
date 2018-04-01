@@ -110,6 +110,7 @@ export default class TodoList extends Component {
       <Text style={styles.title}>
       RemindIO
       </Text>
+      <View style={styles.whitespace}>
       <FlatList
       style={styles.list}
       data={this.state.tasks}
