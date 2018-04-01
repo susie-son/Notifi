@@ -44,18 +44,20 @@ export default class TodoList extends Component {
     let notEmpty = this.state.text.trim().length > 0;
 
     if (notEmpty) {
-      this.setState(
-        prevState => {
-          let { tasks, text } = prevState;
-          return {
-            tasks: tasks.concat({ key: tasks.length, text: text, date: String(this.state.date) }),
-            text: "",
-            date: ""
-          };
-        },
-        () => Tasks.save(this.state.tasks)
-      );
+      fetch(`https://saurav.lib.id/RemindIO@dev/write/?title=${this.state.text}&date=${String(this.state.date).substr(0,10)}`);
     }
+
+    this.setState(
+      prevState => {
+        let { tasks, text } = prevState;
+        return {
+          tasks: tasks.concat({ key: tasks.length, text: text, date: String(this.state.date).substr(0,10) }),
+          text: "",
+          date: ""
+        };
+      },
+      () => Tasks.save(this.state.tasks)
+    );
   };
 
   deleteTask = i => {
@@ -111,7 +113,7 @@ export default class TodoList extends Component {
       onChangeText={this.changeTextHandler}
       onSubmitEditing={this._showDateTimePicker}
       value={this.state.text}
-      placeholder="Add Tasks"
+      placeholder="Add Subscriptions"
       returnKeyType="done"
       returnKeyLabel="done"
       />
@@ -139,44 +141,44 @@ let Tasks = {
     this.convertToArrayOfObject(tasks, callback));
   },
   save(tasks) {
-  AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));}
-};
+    AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));}
+  };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-    padding: viewPadding,
-    paddingTop: 20
-  },
-  list: {
-    width: "100%"
-  },
-  listItem: {
-    paddingTop: 2,
-    paddingBottom: 2,
-    fontSize: 20
-  },
-  hr: {
-    height: 1,
-    backgroundColor: "gray"
-  },
-  listItemCont: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  textInput: {
-    height: 40,
-    fontSize: 20,
-    paddingRight: 10,
-    paddingLeft: 10,
-    borderColor: "gray",
-    borderWidth: isAndroid ? 0 : 1,
-    width: "100%"
-  }
-});
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5FCFF",
+      padding: viewPadding,
+      paddingTop: 20
+    },
+    list: {
+      width: "100%"
+    },
+    listItem: {
+      paddingTop: 2,
+      paddingBottom: 2,
+      fontSize: 20
+    },
+    hr: {
+      height: 1,
+      backgroundColor: "gray"
+    },
+    listItemCont: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between"
+    },
+    textInput: {
+      height: 40,
+      fontSize: 20,
+      paddingRight: 10,
+      paddingLeft: 10,
+      borderColor: "gray",
+      borderWidth: isAndroid ? 0 : 1,
+      width: "100%"
+    }
+  });
 
-AppRegistry.registerComponent("TodoList", () => TodoList);
+  AppRegistry.registerComponent("TodoList", () => TodoList);
