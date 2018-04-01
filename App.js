@@ -90,6 +90,9 @@ export default class TodoList extends Component {
       <View
       style={[styles.container, { paddingBottom: this.state.viewPadding }]}
       >
+      <Text style={styles.title}>
+      RemindIO
+      </Text>
       <FlatList
       style={styles.list}
       data={this.state.tasks}
@@ -102,8 +105,7 @@ export default class TodoList extends Component {
       <Text style={styles.listItem}>
       {String(item.date).substr(0,10)}
       </Text>
-      <Button title="X" onPress={() => this.deleteTask(index)} />
-
+      <Button style={styles.btn} title="X" onPress={() => this.deleteTask(index)} />
       </View>
       <View style={styles.hr} />
       </View>}
@@ -149,16 +151,18 @@ let Tasks = {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#F5FCFF",
+      backgroundColor: "#90CAF9",
       padding: viewPadding,
-      paddingTop: 20
+      paddingTop: 50
+    },
+    title: {
+      fontSize: 40
     },
     list: {
       width: "100%"
     },
     listItem: {
-      paddingTop: 2,
-      paddingBottom: 2,
+      padding: 10,
       fontSize: 20
     },
     hr: {
@@ -168,7 +172,8 @@ let Tasks = {
     listItemCont: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
+      backgroundColor: "#FFFFFF"
     },
     textInput: {
       height: 40,
@@ -176,8 +181,12 @@ let Tasks = {
       paddingRight: 10,
       paddingLeft: 10,
       borderColor: "gray",
+      backgroundColor: "#FFFFFF",
       borderWidth: isAndroid ? 0 : 1,
       width: "100%"
+    },
+    btn: {
+      padding: 10
     }
   });
 
