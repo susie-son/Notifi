@@ -97,8 +97,8 @@ export default class TodoList extends Component {
       <Text style={styles.listItem}>
       {item.text}
       </Text>
-      <Text>
-      {item.date}
+      <Text style={styles.listItem}>
+      {String(item.date).substr(0,10)}
       </Text>
       <Button title="X" onPress={() => this.deleteTask(index)} />
 
@@ -136,12 +136,10 @@ let Tasks = {
   },
   all(callback) {
     return AsyncStorage.getItem("TASKS", (err, tasks) =>
-    this.convertToArrayOfObject(tasks, callback)
-  );
-},
-save(tasks) {
-  AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));
-}
+    this.convertToArrayOfObject(tasks, callback));
+  },
+  save(tasks) {
+  AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));}
 };
 
 const styles = StyleSheet.create({
@@ -159,7 +157,7 @@ const styles = StyleSheet.create({
   listItem: {
     paddingTop: 2,
     paddingBottom: 2,
-    fontSize: 18
+    fontSize: 20
   },
   hr: {
     height: 1,
@@ -172,6 +170,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 40,
+    fontSize: 20,
     paddingRight: 10,
     paddingLeft: 10,
     borderColor: "gray",
