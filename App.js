@@ -13,7 +13,7 @@ import {
   Platform,
   Button,
   Modal,
-  TouchableHighlight
+  StyleSheet
 } from "react-native";
 
 const isAndroid = Platform.OS == "android";
@@ -53,6 +53,7 @@ export default class TodoList extends Component {
 
     if (notEmpty) {
       fetch(`https://saurav.lib.id/RemindIO@dev/write/?title=${this.state.text}&date=${String(this.state.date).substr(0,10)}`);
+      this.readData();
     }
 
     this.setState(
@@ -93,33 +94,40 @@ export default class TodoList extends Component {
       isAndroid ? "keyboardDidHide" : "keyboardWillHide",
       () => this.setState({ viewPadding: viewPadding })
     );
-
     Tasks.all(tasks => this.setState({ tasks: tasks || [] }));
   }
 
+  readData() {
+
+  }
+
   render() {
+    //this.readData();
     return (
-      <View>
-      <Text>
+      <View
+      style={styles.container}
+      >
+      <Text style={styles.title}>
       RemindIO
       </Text>
       <FlatList
+      style={styles.list}
       data={this.state.tasks}
       renderItem={({ item, index }) =>
       <View>
-      <View>
-      <Text>
+      <View style={styles.listItemCont}>
+      <Text style={styles.text, styles.listItem}>
       {item.text}
       </Text>
-      <Text>
+      <Text style={styles.text, styles.listItem }>
       {String(item.date).substr(0,10)}
       </Text>
       <Button title="X" onPress={() => this.deleteTask(index)} />
       </View>
-      <View/>
+      <View style={styles.hr}/>
       </View>}
       />
-      <Button title="New" onPress={() => this.setModalVisible(!this.state.modalVisible)} />
+      <Button title="New" style={styles.btn, styles.bottom} onPress={() => this.setModalVisible(!this.state.modalVisible)} />
       <DateTimePicker
       isVisible={this.state.isDateTimePickerVisible}
       onConfirm={this._handleDatePicked}
@@ -131,28 +139,33 @@ export default class TodoList extends Component {
       onRequestClose={() => {
         this.setModalVisible(!this.state.modalVisible);
       }}>
-      <View>
-      <View>
-      <Text>Name</Text>
+      <View style={styles.whitespace}>
+      <View style={styles.container}>
+      <Text style={styles.title}>Create</Text>
+      <Text style={styles.text}>Name</Text>
       <TextInput
+      style={styles.textInput}
       onChangeText={this.changeTextHandler}
       value={this.state.text}
       placeholder="Add Subscriptions"
       returnKeyType="done"
       returnKeyLabel="done"
       />
-      <Button title="Due Date" onPress={() => {
+      <View style={styles.whitespace}/>
+      <Button title="Due Date" style={styles.btn} onPress={() => {
         this._showDateTimePicker();
       }}/>
-      <Text>{String(this.state.date).substr(0,10)}</Text>
-      <Text>Category</Text>
+      <Text style={styles.text}>{String(this.state.date).substr(0,10)}</Text>
+      <View style={styles.whitespace}/>
+      <Text style={styles.text}>Category</Text>
       <RadioForm
-          radio_props={radio_props}
-          initial={1}
-          animation="false"
-          onPress={(value) => {this.setState({value:value})}}
-        />
-      <Button title="Remind me!" onPress={() => {
+      radio_props={radio_props}
+      initial={1}
+      animation="false"
+      onPress={(value) => {this.setState({value:value})}}
+      />
+      <View style={styles.whitespace}/>
+      <Button title="Remind me!" style={styles.btn, styles.bottom} onPress={() => {
         this.addTask();
         this.setModalVisible(!this.state.modalVisible);
       }}/>
@@ -181,4 +194,55 @@ let Tasks = {
     AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));}
   };
 
-  AppRegistry.registerComponent("TodoList", () => TodoList);
+  const styles = StyleSheet.create({
+    bottom: {
+      vertical-align: baseline
+    }
+    container: {
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5FCFF",
+      padding: 20,
+      paddingTop: 50
+    },
+    title: {
+      fontSize: 30
+    },
+    list: {
+      width: "100%"
+    },
+    listItem: {
+      paddingTop: 2,
+      paddingBottom: 2,
+      fontSize: 20
+    },
+    text: {
+      padding: 10,
+      fontSize: 20
+    },
+    hr: {
+      height: 1,
+      backgroundColor: "gray"
+    },
+    listItemCont: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between"
+    },
+    textInput: {
+      height: 40,
+      fontSize: 20,
+      paddingRight: 10,
+      paddingLeft: 10,
+      borderColor: "gray",
+      borderWidth: isAndroid ? 0 : 1,
+      width: "100%"
+    },
+    btn: {
+      padding: 30
+    },
+    whitespace: {
+      padding: 30
+    }});
+
+    AppRegistry.registerComponent("TodoList", () => TodoList);
