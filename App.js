@@ -108,7 +108,7 @@ export default class TodoList extends Component {
       style={styles.container}
       >
       <Text style={styles.title}>
-      RemindIO
+      Notifi
       </Text>
       <View style={styles.whitespace}>
       <FlatList
