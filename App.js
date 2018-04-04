@@ -1,19 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
-
 import {
   AppRegistry,
+  StyleSheet,
   Text,
   View,
   FlatList,
   AsyncStorage,
+  Button,
   TextInput,
   Keyboard,
   Platform,
-  Button,
-  Modal,
-  StyleSheet
+  Modal
 } from "react-native";
 
 const isAndroid = Platform.OS == "android";
@@ -53,7 +52,6 @@ export default class TodoList extends Component {
 
     if (notEmpty) {
       fetch(`https://saurav.lib.id/RemindIO@dev/write/?title=${this.state.text}&date=${String(this.state.date).substr(0,10)}`);
-      this.readData();
     }
 
     this.setState(
@@ -94,70 +92,68 @@ export default class TodoList extends Component {
       isAndroid ? "keyboardDidHide" : "keyboardWillHide",
       () => this.setState({ viewPadding: viewPadding })
     );
+
     Tasks.all(tasks => this.setState({ tasks: tasks || [] }));
   }
 
-  readData() {
-
-  }
-
   render() {
-    //this.readData();
     return (
       <View
-      style={styles.container}
+        style={[styles.container, { paddingBottom: this.state.viewPadding }]}
       >
       <Text style={styles.title}>
       Notifi
       </Text>
-      <View style={styles.whitespace}>
-      <FlatList
-      style={styles.list}
-      data={this.state.tasks}
-      renderItem={({ item, index }) =>
-      <View>
-      <View style={styles.listItemCont}>
-      <Text style={styles.text, styles.listItem}>
-      {item.text}
-      </Text>
-      <Text style={styles.text, styles.listItem }>
-      {String(item.date).substr(0,10)}
-      </Text>
-      <Button title="X" onPress={() => this.deleteTask(index)} />
-      </View>
-      <View style={styles.hr}/>
-      </View>}
-      />
-      <Button title="New" style={styles.btn, styles.bottom} onPress={() => this.setModalVisible(!this.state.modalVisible)} />
-      <DateTimePicker
-      isVisible={this.state.isDateTimePickerVisible}
-      onConfirm={this._handleDatePicked}
-      onCancel={this._hideDateTimePicker}
-      />
-      <Modal animationType="slide"
-      transparent={false}
-      visible={this.state.modalVisible}
-      onRequestClose={() => {
-        this.setModalVisible(!this.state.modalVisible);
-      }}>
-      <View style={styles.whitespace}>
-      <View style={styles.container}>
-      <Text style={styles.title}>Create</Text>
-      <Text style={styles.text}>Name</Text>
-      <TextInput
-      style={styles.textInput}
-      onChangeText={this.changeTextHandler}
-      value={this.state.text}
-      placeholder="Add Subscriptions"
-      returnKeyType="done"
-      returnKeyLabel="done"
-      />
       <View style={styles.whitespace}/>
-      <Button title="Due Date" style={styles.btn} onPress={() => {
-        this._showDateTimePicker();
-      }}/>
-      <Text style={styles.text}>{String(this.state.date).substr(0,10)}</Text>
-      <View style={styles.whitespace}/>
+        <FlatList
+          style={styles.list}
+          data={this.state.tasks}
+          renderItem={({ item, index }) =>
+            <View>
+              <View style={styles.listItemCont}>
+              <Text style={[styles.text, styles.listItem]}>
+              {item.text}
+              </Text>
+              <Text style={[styles.text, styles.listItem]}>
+              {String(item.date).substr(0,10)}
+              </Text>
+                <Button title="X" onPress={() => this.deleteTask(index)} />
+              </View>
+              <View style={styles.hr} />
+            </View>}
+        />
+        <Button title="New" style={styles.btn, styles.bottom} onPress={() => this.setModalVisible(!this.state.modalVisible)} />
+        <DateTimePicker
+        isVisible={this.state.isDateTimePickerVisible}
+        onConfirm={this._handleDatePicked}
+        onCancel={this._hideDateTimePicker}
+        />
+        <View
+          style={[styles.container, { paddingBottom: this.state.viewPadding }]}
+        >
+        <Modal animationType="slide"
+        transparent={false}
+        visible={this.state.modalVisible}
+        onRequestClose={() => {
+          this.setModalVisible(!this.state.modalVisible);
+        }}>
+        <View style={styles.whitespace}/>
+        <Text style={styles.title}>Create</Text>
+        <Text style={styles.text}>Name</Text>
+        <TextInput
+        style={styles.textInput}
+        onChangeText={this.changeTextHandler}
+        value={this.state.text}
+        placeholder="Add Subscriptions"
+        returnKeyType="done"
+        returnKeyLabel="done"
+        />
+        <View style={styles.whitespace}/>
+        <Button title="Due Date" style={styles.btn} onPress={() => {
+          this._showDateTimePicker();
+        }}/>
+        <Text style={styles.text}>{String(this.state.date).substr(0,10)}</Text>
+        <View style={styles.whitespace}/>
       <Text style={styles.text}>Category</Text>
       <RadioForm
       radio_props={radio_props}
@@ -170,9 +166,8 @@ export default class TodoList extends Component {
         this.addTask();
         this.setModalVisible(!this.state.modalVisible);
       }}/>
-      </View>
-      </View>
       </Modal>
+      </View>
       </View>
     );
   }
@@ -181,7 +176,7 @@ export default class TodoList extends Component {
 let Tasks = {
   convertToArrayOfObject(tasks, callback) {
     return callback(
-      tasks ? tasks.split("||").map((task, i, date) => ({ key: i, text: task, date: date})) : []
+      tasks ? tasks.split("||").map((task, i) => ({ key: i, text: task })) : []
     );
   },
   convertToStringWithSeparators(tasks) {
@@ -189,61 +184,67 @@ let Tasks = {
   },
   all(callback) {
     return AsyncStorage.getItem("TASKS", (err, tasks) =>
-    this.convertToArrayOfObject(tasks, callback));
+      this.convertToArrayOfObject(tasks, callback)
+    );
   },
   save(tasks) {
-    AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));}
-  };
+    AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));
+  }
+};
 
-  const styles = StyleSheet.create({
-    bottom: {
-      vertical-align: baseline
-    }
-    container: {
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#F5FCFF",
-      padding: 20,
-      paddingTop: 50
-    },
-    title: {
-      fontSize: 30
-    },
-    list: {
-      width: "100%"
-    },
-    listItem: {
-      paddingTop: 2,
-      paddingBottom: 2,
-      fontSize: 20
-    },
-    text: {
-      padding: 10,
-      fontSize: 20
-    },
-    hr: {
-      height: 1,
-      backgroundColor: "gray"
-    },
-    listItemCont: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between"
-    },
-    textInput: {
-      height: 40,
-      fontSize: 20,
-      paddingRight: 10,
-      paddingLeft: 10,
-      borderColor: "gray",
-      borderWidth: isAndroid ? 0 : 1,
-      width: "100%"
-    },
-    btn: {
-      padding: 30
-    },
-    whitespace: {
-      padding: 30
-    }});
+const styles = StyleSheet.create({
+  bottom: {
+    alignItems: "baseline"
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
+    padding: 20,
+    paddingTop: 50
+  },
+  title: {
+    fontSize: 30,
+    textAlign: "center"
+  },
+  list: {
+    width: "100%"
+  },
+  listItem: {
+    paddingTop: 2,
+    paddingBottom: 2,
+    fontSize: 20
+  },
+  text: {
+    padding: 10,
+    fontSize: 20
+  },
+  hr: {
+    height: 1,
+    backgroundColor: "gray"
+  },
+  listItemCont: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  textInput: {
+    height: 40,
+    fontSize: 20,
+    paddingRight: 10,
+    paddingLeft: 10,
+    borderColor: "gray",
+    borderWidth: isAndroid ? 0 : 1,
+    width: "100%"
+  },
+  btn: {
+    flex: 1,
+    padding: 30
+  },
+  whitespace: {
+    padding: 30
+  }
+});
 
-    AppRegistry.registerComponent("TodoList", () => TodoList);
+AppRegistry.registerComponent("TodoList", () => TodoList);
