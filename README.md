@@ -7,4 +7,4 @@ This project was bootstrapped with [Create React Native App](https://github.com/
 Project Website can be found here
 http://susieson.me/Notifi/
 
-
+![alt text](docs/logo.png "Le logo")
