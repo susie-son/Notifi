@@ -1,4 +1,4 @@
-#Notifi
+# Notifi
 
 Notifi was created for HackPrinceton Spring 2018. Check out our [Devpost](https://devpost.com/software/notifi-ot28ca)!
 
