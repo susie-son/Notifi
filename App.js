@@ -1,37 +1,54 @@
 import React, { Component } from "react";
+import { Font } from "expo";
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import { Footer, Radio, Right, Left, Label, Form, Item, Input, Container, Header, Body, Title, Content, Button, Text, List, ListItem } from 'native-base';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
   View,
   FlatList,
   AsyncStorage,
-  Button,
   TextInput,
   Keyboard,
   Platform,
-  Modal
+  Modal,
+  StatusBar,
+  Dimensions,
+  Alert,
+  Image
 } from "react-native";
+import { Constants } from 'expo';
+
+var good = ["\"Nice\"", "\"Wow\"", "\"Hey thats pretty good\""];
+var gooda = ["-Michael Rosen","-Eddy Wally","-iDubbbz"];
+var bad = ["\"Piss off\"", "\"WHAT ARE YOU?!?!, AN IDIOT SANDWICH\"", "\"IT'S RAW\""];
+var bada = ["-Gordon Ramsay","-Gordon Ramsay","-Gordon Ramsay"];
 
 const isAndroid = Platform.OS == "android";
 const viewPadding = 10;
-
-var radio_props = [
-  {label: 'Critical', value: 1 },
-  {label: 'Non-critical', value: 0 }
-];
 
 export default class TodoList extends Component {
   state = {
     tasks: [],
     text: "",
-    date: "",
+    date: "          ",
     isDateTimePickerVisible: false,
     modalVisible: false,
-    value: 0
+    modalVisible2: false,
+    value: 0,
+    loading: true,
+    itemSelected: 'non-critical'
   };
+
+  _onPressButton() {
+    var x = Math.floor(Math.random() * 2);
+    var y = Math.floor(Math.random() * 3);
+    if(x===0) {
+      Alert.alert(good[y],gooda[y])
+    } else {
+      Alert.alert(bad[y],bada[y])
+    }
+  }
 
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
 
@@ -82,6 +99,18 @@ export default class TodoList extends Component {
     this.setState({modalVisible: visible});
   }
 
+  setModalVisible2(visible) {
+    this.setState({modalVisible2: visible});
+  }
+
+  async componentWillMount() {
+    await Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+    });
+    this.setState({ loading: false });
+  }
+
   componentDidMount() {
     Keyboard.addListener(
       isAndroid ? "keyboardDidShow" : "keyboardWillShow",
@@ -97,78 +126,127 @@ export default class TodoList extends Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return <Expo.AppLoading />;
+    }
     return (
-      <View
-        style={[styles.container, { paddingBottom: this.state.viewPadding }]}
-      >
-      <Text style={styles.title}>
-      Notifi
-      </Text>
-      <View style={styles.whitespace}/>
-        <FlatList
-          style={styles.list}
-          data={this.state.tasks}
-          renderItem={({ item, index }) =>
-            <View>
-              <View style={styles.listItemCont}>
-              <Text style={[styles.text, styles.listItem]}>
-              {item.text}
-              </Text>
-              <Text style={[styles.text, styles.listItem]}>
-              {String(item.date).substr(0,10)}
-              </Text>
-                <Button title="X" onPress={() => this.deleteTask(index)} />
-              </View>
-              <View style={styles.hr} />
-            </View>}
-        />
-        <Button title="New" style={styles.btn, styles.bottom} onPress={() => this.setModalVisible(!this.state.modalVisible)} />
-        <DateTimePicker
-        isVisible={this.state.isDateTimePickerVisible}
-        onConfirm={this._handleDatePicked}
-        onCancel={this._hideDateTimePicker}
-        />
-        <View
-          style={[styles.container, { paddingBottom: this.state.viewPadding }]}
-        >
-        <Modal animationType="slide"
-        transparent={false}
-        visible={this.state.modalVisible}
-        onRequestClose={() => {
-          this.setModalVisible(!this.state.modalVisible);
-        }}>
-        <View style={styles.whitespace}/>
-        <Text style={styles.title}>Create</Text>
-        <Text style={styles.text}>Name</Text>
-        <TextInput
-        style={styles.textInput}
-        onChangeText={this.changeTextHandler}
-        value={this.state.text}
-        placeholder="Add Subscriptions"
-        returnKeyType="done"
-        returnKeyLabel="done"
-        />
-        <View style={styles.whitespace}/>
-        <Button title="Due Date" style={styles.btn} onPress={() => {
-          this._showDateTimePicker();
-        }}/>
-        <Text style={styles.text}>{String(this.state.date).substr(0,10)}</Text>
-        <View style={styles.whitespace}/>
-      <Text style={styles.text}>Category</Text>
-      <RadioForm
-      radio_props={radio_props}
-      initial={1}
-      animation="false"
-      onPress={(value) => {this.setState({value:value})}}
-      />
-      <View style={styles.whitespace}/>
-      <Button title="Remind me!" style={styles.btn, styles.bottom} onPress={() => {
-        this.addTask();
-        this.setModalVisible(!this.state.modalVisible);
-      }}/>
-      </Modal>
-      </View>
-      </View>
+      <Container>
+        <StatusBar barStyle="dark-content" hidden = {false}/>
+        <Content>
+          <Modal visible={true}>
+          <Header>
+            <Body>
+              <Title>Notifi</Title>
+            </Body>
+          </Header>
+          <View style={{flex: 1}}>
+            <List
+            dataArray={this.state.tasks}
+            renderRow={(item, sectionID, rowID) =>
+                <ListItem style={{flex: 1, width: Dimensions.get('window').width}}>
+                  <Text style={{width: Dimensions.get('window').width / 2 - 30}}>{item.text}</Text>
+                  <Text style={{width: Dimensions.get('window').width / 2 - 30}}>{String(item.date).substr(0,10)}</Text>
+                  <Button transparent dark
+                  onPress={() => this.deleteTask(rowID)}>
+                    <Text>X</Text>
+                  </Button>
+                </ListItem>}>
+            </List>
+          </View>
+          <Footer>
+            <Button transparent light
+            onPress={() => this.setModalVisible(!this.state.modalVisible)}>
+              <Text>New</Text>
+            </Button>
+          </Footer>
+          <DateTimePicker
+          isVisible={this.state.isDateTimePickerVisible}
+          onConfirm={this._handleDatePicked}
+          onCancel={this._hideDateTimePicker}
+          />
+          </Modal>
+          <Modal animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setModalVisible(!this.state.modalVisible);
+          }}>
+          <Header>
+            <Body>
+              <Title>Create</Title>
+            </Body>
+          </Header>
+          <View style={{flex: 1}}>
+            <List>
+              <ListItem inline>
+                <Label style={{fontSize: 20, marginRight: 30}}>Subscription:</Label>
+                <Input
+                placeholder="Enter Subscription"
+                onChangeText={this.changeTextHandler}
+                value={this.state.text}
+                returnKeyType="done"
+                returnKeyLabel="done"/>
+              </ListItem>
+              <ListItem>
+                <Button style={{padding: 10, marginRight: 30}}
+                onPress={() => {this._showDateTimePicker();}}>
+                  <Text style={{fontSize: 18}}>Date</Text>
+                </Button>
+                <Label style={{fontSize: 20, height: 30}}>{String(this.state.date).substr(0,10)}</Label>
+              </ListItem>
+              <ListItem>
+                <Text style={{fontSize: 20, marginRight: 30}}>Category:</Text>
+                <Radio style={{marginRight: 10}}
+                onPress={() => this.setState({ itemSelected: 'critical' })}
+                selected={this.state.itemSelected == 'critical'}/>
+                <Text style={{marginRight: 30}}>Critical</Text>
+                <Radio style={{marginRight: 10}}
+                onPress={() => this.setState({ itemSelected: 'non-critical' })}
+                selected={this.state.itemSelected == 'non-critical'}/>
+                <Text>Non-critical</Text>
+              </ListItem>
+            </List>
+            <Button transparent light
+            onPress={() => {
+              this.setModalVisible2(!this.state.modalVisible2);
+            }}>
+              <Text></Text>
+            </Button>
+          </View>
+          <Footer>
+            <Button transparent light
+            onPress={() => {this.addTask();
+              this.setModalVisible(!this.state.modalVisible);
+            }}>
+              <Text>Remind me!</Text>
+            </Button>
+          </Footer>
+          </Modal>
+          <Modal animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible2}
+          onRequestClose={() => {
+            this.setModalVisible2(!this.state.modalVisible2);
+          }}>
+          <View style={styles.container}>
+          <Image
+          style={{width: 300, height: 300}}
+          source={{uri: 'http://cultofthepartyparrot.com/parrots/rotatingparrot.gif'}}
+          />
+          <Text style={styles.paragraph}>
+            Click the button for a surprise 😃
+          </Text>
+          <View style={{flexDirection: "row", justifyContent: "center"}}>
+            <Button
+            onPress={this._onPressButton}
+            color="#51EA49">
+              <Text>Click me</Text>
+            </Button>
+          </View>
+          </View>
+          </Modal>
+        </Content>
+      </Container>
     );
   }
 }
@@ -193,58 +271,20 @@ let Tasks = {
 };
 
 const styles = StyleSheet.create({
-  bottom: {
-    alignItems: "baseline"
-  },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-    padding: 20,
-    paddingTop: 50
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
   },
-  title: {
-    fontSize: 30,
-    textAlign: "center"
+  paragraph: {
+    margin: 24,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#34495e',
   },
-  list: {
-    width: "100%"
-  },
-  listItem: {
-    paddingTop: 2,
-    paddingBottom: 2,
-    fontSize: 20
-  },
-  text: {
-    padding: 10,
-    fontSize: 20
-  },
-  hr: {
-    height: 1,
-    backgroundColor: "gray"
-  },
-  listItemCont: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  textInput: {
-    height: 40,
-    fontSize: 20,
-    paddingRight: 10,
-    paddingLeft: 10,
-    borderColor: "gray",
-    borderWidth: isAndroid ? 0 : 1,
-    width: "100%"
-  },
-  btn: {
-    flex: 1,
-    padding: 30
-  },
-  whitespace: {
-    padding: 30
-  }
 });
 
 AppRegistry.registerComponent("TodoList", () => TodoList);

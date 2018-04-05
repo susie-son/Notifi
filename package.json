@@ -27,6 +27,7 @@
     "react-native": "0.54.0",
     "react-native-datepicker": "^1.6.0",
     "react-native-modal-datetime-picker": "^5.1.0",
-    "react-native-simple-radio-button": "^2.7.1"
+    "react-native-simple-radio-button": "^2.7.1",
+    "react-navigation": "^1.5.9"
   }
 }
