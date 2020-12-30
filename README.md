@@ -5,6 +5,6 @@ Notifi was created at HackPrinceton Spring 2018. Check out our [Devpost](https:/
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Project Website can be found here
-http://susieson.me/Notifi/
+https://susie-son.github.io/Notifi/
 
 ![alt text](docs/logo.png "Le logo")
